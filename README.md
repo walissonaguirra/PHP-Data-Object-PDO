@@ -89,7 +89,7 @@ $stmt = $pdo->prepare("INSERT INTO students(name, age) values (:name, :age)");
 $stmt->execute($data);
 ```
 
-## Processar os resultados de uma consulta SELECT
+### Processar os resultados de uma consulta SELECT
 
 Uma vez executado o metodo `execute()`, podemos acessar os resultados obtidos do banco de dados. O PDO nos oferece a possibilidade de receber os resultados em diversos formatos: objetos de uma classe, arrays associativos, etc. Para dizer como queremos coletar os resultados, usaremos o método `setFetchMode(String mode)`.
 
@@ -115,9 +115,9 @@ $stmt->execute($data);
 
 // Mostramos os resultados obtidos
 while($row = $stmt->fetch()) {
-		echo $row['name'] . PHP_EOL;
-		echo $row['name_social'] . PHP_EOL;
-		echo $row['age'] . PHP_EOL;
+    echo $row['name'] . PHP_EOL;
+    echo $row['name_social'] . PHP_EOL;
+    echo $row['age'] . PHP_EOL;
 }
 ```
 
@@ -135,9 +135,9 @@ $stmt->execute($data);
 
 // Mostramos os resultados obtidos
 while($row = $stmt->fetch()) {
-		echo $row->name . PHP_EOL;
-		echo $row->name_social . PHP_EOL;
-		echo $row->age . PHP_EOL;
+    echo $row->name . PHP_EOL;
+    echo $row->name_social . PHP_EOL;
+    echo $row->age . PHP_EOL;
 }
 
 ```
@@ -152,17 +152,16 @@ while($row = $stmt->fetch()) {
 // As modificações desses dados podem ser feito no construtor da class.
 
 class Student {
+    public $name;
+    public $name_social;
+    public $age;
+    public $otherInformation;
 
-		public $name;
-		public $name_social;
-		public $age;
-		public $otherInformation;
-
-		function __construct($otherInformation = '') {
-				// O construtor será executado após associar os valores obtidos do banco de dados ao objeto. Portanto, podemos tratar esses valores dentro do construtor.
-				$this->name = strtoupper($this->name);
-				$this->otherInformation = $otherInformation;
-		}
+    function __construct($otherInformation = '') {
+        // O construtor será executado após associar os valores obtidos do banco de dados ao objeto. Portanto, podemos tratar esses valores dentro do construtor.
+	$this->name = strtoupper($this->name);
+        $this->otherInformation = $otherInformation;
+    }
 }
 
 $data = [ 'name' => 'Walisson Aguirra', 'age' => 24 ];
@@ -176,11 +175,11 @@ $stmt->execute($data);
 
 // Mostramos os resultados obtidos
 while($obj = $stmt->fetch()) {
-		echo $obj->name;
+    echo $obj->name;
 }
 ```
 
-## Método abreviado query()
+### Método abreviado query()
 Em consultas que não recebem parâmetros, podemos utilizar o método de atalho `query()` que executará a instrução e retornará o conjunto de resultados diretamente. Ou seja, não é necessário fazer a operação em 2 passo (`prepare()` e `execute()`) como fizemos até agora.
 
 ```php
@@ -190,22 +189,22 @@ $stmt = $pdo->query('SELECT name, name_social, age from students');
 $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
 while($row = $stmt->fetch()) {
-		echo $row['name'] . PHP_EOL;
-		echo $row['name_social'] . PHP_EOL;
-		echo $row['age'] . PHP_EOL;
+    echo $row['name'] . PHP_EOL;
+    echo $row['name_social'] . PHP_EOL;
+    echo $row['age'] . PHP_EOL;
 }
 ```
 Por razões de segurança (evite [injeção de SQL](https://pt.wikipedia.org/wiki/Inje%C3%A7%C3%A3o_de_SQL)) é aconselhável evitar o método `query()` quando a instrução inclui valores de variáveis. Por razões de desempenho também é recomendado usar `prepare()` e `execute()` em instruções que serão executadas múltiplas vezes.
 
-## Método fetchObject()
+### Método fetchObject()
 Existe uma alternativa ao método `fetch()` que retornará os resultados como objetos anônimos (**`PDO::FETCH_OBJ`**) ou objetos da classe indicada (**`PDO::FETCH_CLASS`**) . Este método é chamado `fetchObject()`.
 
 ```php
 $stmt = $pdo->query('SELECT name, name_social, age from students');
 
 while($student = $stmt->fetchObject()) {
-		echo $student->name;
-		echo $student->name_social;
+    echo $student->name;
+    echo $student->name_social;
 }
 ```
 
@@ -214,12 +213,12 @@ Se quisermos que os objetos pertençam a uma classe específica, podemos passa c
 $stmt = $pdo->query('SELECT name, name_social, age from students');
 
 while($student = $stmt ->fetchObject('Studant')) {
-		echo $student->name;
-		echo $student->name_social;
+    echo $student->name;
+    echo $student->name_social;
 }
 ```
 
-## Obter todos os resultados com o método fetchAll()
+### Obter todos os resultados com o método fetchAll()
 Ao contrário do método `fetch()`, `fetchAll()` traz todos os dados de uma vez, sem abrir nenhum ponteiro, armazenando-os em um array. É recomendado quando você não espera muitos resultados que possam causar problemas de memória, quando você deseja salvar milhares de linhas de um SELECT em um array de uma só vez.
 ```php
 // Neste caso $result será um array associativo com todos os dados do banco de dados
