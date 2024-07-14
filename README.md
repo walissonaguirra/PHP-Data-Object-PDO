@@ -1,4 +1,4 @@
-## PHP Data Object (PDO) <img src="https://github.com/user-attachments/assets/6754d142-a1b1-4313-bc94-6e7ea990c0e0" width="14%" height="14%" align="right" valign="center" alt="PHP Data Object"/> 
+## PHP Data Object (PDO) <img src="https://github.com/user-attachments/assets/6754d142-a1b1-4313-bc94-6e7ea990c0e0" width="14%" height="14%" align="right" valign="center" alt="PHP Data Object"/>
 
 ![PHP](https://img.shields.io/badge/PHP-%5E8.2-blue)
 ![License](https://img.shields.io/badge/Code%20GNU-License-blue.svg)
@@ -46,192 +46,187 @@ function connect(): PDO
 `ATTR_ERRMODE` Lança exceções em erros.
 
 
-### Executando estruções SQL
-Los pasos para ejecutar una sentencia SQL son:
+### Executando instrução SQL
+As etapas para executar uma instrução SQL são:
 
- 1. **Establecer** conexión con la base de datos (ver punto anterior)
- 2. **Preparar** la sentencia
- 3. **Ejecutar** sentencia (asociando parámetros si fuese necesario)
- 4. Opcional: tratar el resultado de la sentencia ejecutada.
+ 1. **Connect** conexão com o banco de dados (ver ponto anterior)
+ 2. **Prepare** prepara uma instrução
+ 3. **Execute** executar a instrução (associando parâmetros se necessário)
+ 4. Opcional: processe o resultado da instrução executada.
 
-### Preparar la sentencia
-Podemos preparar la sentencia a ejecutar de forma sencilla 
+### Preparando uma instrução
+Podemos preparar a instrução para ser executada de forma simples 
 ```php
-$stmt = $dbh->prepare("SELECT nombre, apellidos FROM alumnos");
-```
-En caso de necesitar incluir parámetros en la sentencia, podemos realizarlo utilizando la sintaxis `:nombre`
-
-```php
-$stmt = $dbh->prepare("SELECT nombre, apellidos FROM alumnos WHERE edad > :edad");
+$stmt = $pdo->prepare("SELECT name, name_social FROM students");
 ```
 
-De la misma forma que hemos preparado una consulta de tipo SELECT, también podemos preparar un INSERT, UPDATE, etc.
-
+Se precisarmos incluir parâmetros na instrução, podemos usar a sintaxe `:name`
 ```php
-$stmt= $dbh->prepare("INSERT INTO alumnos(nombre, apellidos) values (:nombre, :apellidos)");
+$stmt = $pdo->prepare("SELECT name, name_social FROM students WHERE age > :age");
 ```
 
-### Ejecutar la sentencia
-Para ejecutar una sentencia simple que no requiera de parámetros, podemos invocar directamente el método `execute()`. 
+Da mesma forma que preparamos uma consulta do tipo `SELECT`, também podemos preparar uma consulta `INSERT`, `UPDATE`, etc.
 ```php
-$stmt = $dbh->prepare("SELECT nombre, apellidos FROM alumnos");
+$stmt = $pdo->prepare("INSERT INTO students(name, name_social) values (:name, :name_social)");
+```
+
+### Executar á instrução
+Para executar uma instrução simples que não requer parâmetros, podemos invocar diretamente o método `execute()`.
+```php
+$stmt = $pdo->prepare("SELECT name, name_social FROM students");
 $stmt->execute();
 ```
-En caso de necesitar incluir parámetros en la sentencia, pasaremos al método `execute()` la información en un array asociativo:
-
+Se precisarmos incluir parâmetros na instrução, passaremos as informações em um array associativo para o método `execute()`:
 ```php
-$data = array( 'nombre' => 'Mikel', 'edad' => 15 );
-$stmt = $dbh->prepare("SELECT nombre, apellidos FROM alumnos WHERE nombre = :nombre AND edad = :edad");
+$data = [ ':name' => 'Walisson Aguirra', ':age' => 24 ];
+$stmt = $pdo->prepare("SELECT name, name_social FROM students WHERE name = :name AND age = :age");
 $stmt->execute($data);
 ```
-De la misma forma que hemos preparado una consulta de tipo SELECT, también podemos preparar un INSERT, UPDATE, etc.
-
+Da mesma forma que preparamos uma consulta do tipo `SELECT`, também podemos preparar uma consulta `INSERT`, `UPDATE`, etc.
 ```php
-$data = array( 'nombre' => 'Mikel', 'edad' => 15 );
-$stmt = $dbh->prepare("INSERT INTO alumnos(nombre, edad) values (:nombre, :edad)");
+$data = [ ':name' => 'Walisson Aguirra', ':age' => 24 ];
+$stmt = $pdo->prepare("INSERT INTO students(name, age) values (:name, :age)");
 $stmt->execute($data);
 ```
 
-## Tratar los resultados de una consulta SELECT
+## Processar os resultados de uma consulta SELECT
 
-Una vez ejecutada la sentencia `execute()` podremos acceder a los resultados obtenidos de la base de datos. PDO nos ofrece la posiblidad de recibir los resultados en distintos formatos: objetos de una clase, arrays asociativos, etc. Para indicarle cómo queremos recoger los resultados utilizaremos el método `setFetchMode(String mode)`. 
+Uma vez executado o metodo `execute()`, podemos acessar os resultados obtidos do banco de dados. O PDO nos oferece a possibilidade de receber os resultados em diversos formatos: objetos de uma classe, arrays associativos, etc. Para dizer como queremos coletar os resultados, usaremos o método `setFetchMode(String mode)`.
 
-Estos son los 3 valores más utilizados y que nos servirán para cubrir prácticamente todas nuestras necesidades:
+Estes são os 3 valores mais utilizados que nos ajudarão a cobrir praticamente todas as nossas necessidades:
 
- - PDO::FETCH_ASSOC: devuelve un array cuyos índices serán los nombres de las columnas.
- - PDO::FETCH_CLASS: Asigna los valores de las columnas a las propiedades de la clase. Creará nuevas propiedades en caso de que no existan para las columnas.
- - PDO::FETCH_OBJ: devuelve objetos anónimos con propiedades que corresponden a los nombres de columna.
+ - **PDO::FETCH_ASSOC:** retorna um array onde os índices serão os nomes das colunas.
+ - **PDO::FETCH_CLASS:** Atribui os valores das colunas às propriedades da classe. Criar novas propriedades caso não existam para as colunas.
+ - **PDO::FETCH_OBJ:** Retorna objetos anônimos com propriedades que correspondem aos nomes das colunas.
 
-Una vez indicado el cómo queremos los datos, utilizaremos el método `fetch()` para acceder a la información. El método `fetch()` obtiene la siguiente fila de un conjunto de resultados, por lo que podremos iterar por los resultados tal y como se muestra en los ejemplos siguientes:
+Depois de definirmos como queremos os dados, usaremos o método `fetch()` para acessar as informações. O método `fetch()` busca a próxima linha de um conjunto de resultados, para que possamos iterar pelos resultados conforme mostrado nos exemplos a seguir:
 
+**FETCH ASSOC:**
 ```php
-function fetchAssoc(){
-	// Este tipo de fetch crea un array asociativo, indexado por el nombre de la columna.
-	
-	$data = array( 'nombre' => 'Mikel', 'edad' => 15 );
-	$stmt = $dbh->prepare("SELECT nombre, apellidos, edad FROM alumnos WHERE nombre = :nombre AND edad = :edad");
-	// Establecemos el modo en el que queremos recibir los datos
-	$stmt->setFetchMode(PDO::FETCH_ASSOC);
-	// Ejecutamos la sentencia
-	$stmt->execute($data);
-	// Mostramos los resultados obtenidos
-	while($row = $stmt->fetch()) {
-		echo $row['nombre'] . "\n";
-		echo $row['apellidos'] . "\n";
-		echo $row['edad '] . "\n";
-	}
+// Este tipo de busca cria um array associativo, indexado pelo nome da coluna.
+$data = array( 'name' => 'Walisson Aguirra', 'age' => 24 );
+$stmt = $pdo->prepare("SELECT name, name_social, age FROM students WHERE name = :name AND age = :age");
+
+// Definimos a forma como queremos receber os dados
+$stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+// Executamos a instrução sql
+$stmt->execute($data);
+
+// Mostramos os resultados obtidos
+while($row = $stmt->fetch()) {
+		echo $row['name'] . PHP_EOL;
+		echo $row['name_social'] . PHP_EOL;
+		echo $row['age'] . PHP_EOL;
+}
+```
+
+**FETCH OBJ:**
+```php
+// Este método cria um objeto para cada linha obtida do banco de dados.
+$data = array( 'name' => 'Walisson Aguirra', 'age' => 24 );
+$stmt = $pdo->prepare("SELECT name, name_social, age FROM students WHERE name = :name AND age = :age");
+
+// Definimos a forma como queremos receber os dados
+$stmt->setFetchMode(PDO::FETCH_OBJ);
+
+// Executamos a instrução sql
+$stmt->execute($data);
+
+// Mostramos os resultados obtidos
+while($row = $stmt->fetch()) {
+		echo $row->name . PHP_EOL;
+		echo $row->name_social . PHP_EOL;
+		echo $row->age . PHP_EOL;
 }
 
-function fetch_obj(){
-	// Este método crea un objeto por cada fila obtenida de la base de datos.
+```
 
-	$data = array( 'nombre' => 'Mikel', 'edad' => 15 );
-	$stmt = $dbh->prepare("SELECT nombre, apellidos, edad FROM alumnos WHERE nombre = :nombre AND edad = :edad");
-	// Establecemos el modo en el que queremos recibir los datos
-	$stmt->setFetchMode(PDO::FETCH_OBJ);
-	// Ejecutamos la sentencia
-	$stmt->execute($data);
-	
-	// Mostramos los resultados obtenidos
-	while($row = $stmt->fetch()) {
-		echo $row->nombre . "\n";
-		echo $row->apellidos . "\n";
-		echo $row->edad . "\n";
-	}
+**FETCH CLASS:**
+```php
+// Este método retorna os dados como objeto da class que indicamos.
+// As propriedades do objeto serão inicializadas com dados do banco de dados antes de chamar o construtor.
 
-}
+// Se houver nomes de colunas que não possuem uma propriedade na class, elas serão criadas como propriedades de tipo público
 
-function fetch_class(){
-	// Este método devuelve los datos como objetos de la clase que nosotros le hayamos indicado.
-	// Las propiedades del objeto se inicializarán con los datos de la base de datos antes de llamar al constructor.
+// As modificações desses dados podem ser feito no construtor da class.
 
-	// Si hubiese nombres de columnas que no tienen una propiedad en la clase, se crearán como propiedades de tipo public
+class Student {
 
-	// Se pueden realizar transformaciones sobre esos datos en el constructor de la clase.
+		public $name;
+		public $name_social;
+		public $age;
+		public $otherInformation;
 
-	class Alumno {
-
-		public $nombre;
-		public $apellidos;
-		public $edad;
-		public $otraInformacion;
-
-		function __construct($otraInformacion= '') {
-			// El constructor se ejecutará después de asociar los valores obtenidos de la base de datos al objeto. Por lo tanto, podemos tratar esos valores dentro del constructor.
-			$this->nombre = strtoupper($this->nombre);
-			$this->otraInformacion = $otraInformacion;
+		function __construct($otherInformation = '') {
+				// O construtor será executado após associar os valores obtidos do banco de dados ao objeto. Portanto, podemos tratar esses valores dentro do construtor.
+				$this->name = strtoupper($this->name);
+				$this->otherInformation = $otherInformation;
 		}
-	}
-
-	$data = array( 'nombre' => 'Mikel', 'edad' => 15 );
-	$stmt = $dbh->prepare("SELECT nombre, apellidos FROM alumnos WHERE nombre = :nombre AND edad = :edad");
-	// Establecemos el modo en el que queremos recibir los datos
-	$stmt->setFetchMode(PDO::FETCH_CLASS, 'Alumno');
-	// Ejecutamos la sentencia
-	$stmt->execute($data);
-
-	// Mostramos los resultados
-	while($obj = $stmt->fetch()) {
-		echo $obj->nombre;
-	}
 }
 
+$data = [ 'name' => 'Walisson Aguirra', 'age' => 24 ];
+$stmt = $pdo->prepare("SELECT name, name_social FROM students WHERE name = :name AND age = :age");
+
+// Definimos a forma como queremos receber os dados
+$stmt->setFetchMode(PDO::FETCH_CLASS, 'Student');
+
+// Executamos a instrução sql
+$stmt->execute($data);
+
+// Mostramos os resultados obtidos
+while($obj = $stmt->fetch()) {
+		echo $obj->name;
+}
 ```
+
 ## Método abreviado query()
-En consultas que no reciban parámetros, podemos utilizar el método abreviado `query()` el cual ejecutará la sentencia y nos devolverá el conjunto de resultados directamente. En otras palabras, no es necesario hacer la operación en 2 pasos (`prepare()` y `execute()`) como hacíamos hasta ahora.
+Em consultas que não recebem parâmetros, podemos utilizar o método de atalho `query()` que executará a instrução e retornará o conjunto de resultados diretamente. Ou seja, não é necessário fazer a operação em 2 passo (`prepare()` e `execute()`) como fizemos até agora.
 
 ```php
-	$stmt = $dbh->query('SELECT nombre, apellidos, edad from empleado');
+$stmt = $pdo->query('SELECT name, name_social, age from students');
 
-	// Establecemos el modo en el que queremos recibir los datos
-	$stmt->setFetchMode(PDO::FETCH_ASSOC);
+// Definimos a forma como queremos receber os dados
+$stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-	while($row = $stmt->fetch()) {
-		echo $row['nombre'] . "\n";
-		echo $row['apellidos'] . "\n";
-		echo $row['edad '] . "\n";
-	}
+while($row = $stmt->fetch()) {
+		echo $row['name'] . PHP_EOL;
+		echo $row['name_social'] . PHP_EOL;
+		echo $row['age'] . PHP_EOL;
+}
 ```
-Por razones de seguridad (evitar [SQL Injection](https://es.wikipedia.org/wiki/Inyecci%C3%B3n_SQL)) es recomendable evitar el método `query()` cuando la sentencia incluya valores variables. Por razones de rendimiento también se recomienda utilizar `prepare()` y `execute()` en sentencias que vayan a ejecutarse varias veces.
+Por razões de segurança (evite [injeção de SQL](https://pt.wikipedia.org/wiki/Inje%C3%A7%C3%A3o_de_SQL)) é aconselhável evitar o método `query()` quando a instrução inclui valores de variáveis. Por razões de desempenho também é recomendado usar `prepare()` e `execute()` em instruções que serão executadas múltiplas vezes.
 
 ## Método fetchObject()
-Existe una alternativa al método `fetch()` la cual devolverá los resultados cómo objetos anónimos (**`PDO::FETCH_OBJ`** ) u objetos de la clase indicada ( **`PDO::FETCH_CLASS`**). Este método se llama `fetchObject()`.
+Existe uma alternativa ao método `fetch()` que retornará os resultados como objetos anônimos (**`PDO::FETCH_OBJ`**) ou objetos da classe indicada (**`PDO::FETCH_CLASS`**) . Este método é chamado `fetchObject()`.
 
 ```php
-	$stmt = $dbh->query('SELECT nombre, apellidos, edad from empleado');
+$stmt = $pdo->query('SELECT name, name_social, age from students');
 
-	while($persona = $stmt ->fetchObject()) {
-		echo $persona->nombre;
-		echo $persona->apellidos;
-	}
+while($student = $stmt->fetchObject()) {
+		echo $student->name;
+		echo $student->name_social;
+}
 ```
-En caso de que queremos que los objetos pertenezcan a una clase en concreto, es suficiente con indicárselo en la llamada:
 
+Se quisermos que os objetos pertençam a uma classe específica, podemos passa como paramento na chamada do método:
 ```php
-	$stmt = $dbh->query('SELECT nombre, apellidos, edad from empleado');
+$stmt = $pdo->query('SELECT name, name_social, age from students');
 
-	while($persona = $stmt ->fetchObject('Alumno')) {
-		echo $persona->nombre;
-		echo $persona->apellidos;
-	}
+while($student = $stmt ->fetchObject('Studant')) {
+		echo $student->name;
+		echo $student->name_social;
+}
 ```
 
-## Obtener todos los resultados con fetchAll()
-A diferencia del método `fetch()`, `fetchAll()` te trae todos los datos de golpe, sin abrir ningún puntero, almacenándolos en un array. Se recomienda cuando no se esperan demasiados resultados que podrían provocar problemas de memoria al querer guardar de golpe en un array miles de filas provenientes de un SELECT.
-
+## Obter todos os resultados com o método fetchAll()
+Ao contrário do método `fetch()`, `fetchAll()` traz todos os dados de uma vez, sem abrir nenhum ponteiro, armazenando-os em um array. É recomendado quando você não espera muitos resultados que possam causar problemas de memória, quando você deseja salvar milhares de linhas de um SELECT em um array de uma só vez.
 ```php
-	// En este caso $resultado será un array asociativo con todos los datos de la base de datos
-	$resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	
-	// Para leer las filas podemos recorrer el array y acceder a la información.
-	foreach ($resultado as $row){
-	    echo $row["nombre"]." ".$row["apellido"].PHP_EOL;
-	}
+// Neste caso $result será um array associativo com todos os dados do banco de dados
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Para ler as linhas podemos percorrer o array e acessar as informações.
+foreach ($result as $row){
+    echo $row["name"]." ".$row["name_social"] . PHP_EOL;
+}
 ```
-Es casi idéntico que en `fetch()`, sólo que aquí no estamos actuando sobre un recorrido de los datos a través de un puntero, sino sobre los datos ya almacenados en una variable. Si por ejemplo antes de esto nosotros cerramos el statement, ya tenemos los datos en $resultado y podremos leerlos. En `fetch` si cerramos el statement no podremos leer los datos.
-
-## Licencia
-
-Puedes utilizar esta guía para lo que quieras. El objetivo de esta guía es ayudarte a tí y a todas las personas que lo necesiten a utilizar PDO de forma correcta. Puedes utilizar este contenido de la forma que lo creas conveniente, sin ser necesario citar al autor o el origen de la fuente (aunque se agradece ;-)
-
-Happy coding!
