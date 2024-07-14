@@ -229,3 +229,7 @@ foreach ($result as $row){
     echo $row["name"]." ".$row["name_social"] . PHP_EOL;
 }
 ```
+
+### Licença
+
+Este projeto está licenciado sob a licença [GNU General Public License v3.0](https://github.com/walissonaguirra/fsphp/blob/main/LICENSE).
